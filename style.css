@@ -1,0 +1,26 @@
+.outerContainer {
+    display: flex;
+    flex-direction: column;
+    height: 80px;
+    width: 500px;
+    justify-content: space-evenly;
+}
+
+.innerContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.displayBlock {
+    display: block;
+}
+.displayNone {
+    display: none;
+}
+
+/* 
+.stage-0
+.stage-1
+.stage-2
+*/
