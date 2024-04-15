@@ -39,10 +39,6 @@ function delay(ms) {
 // }
 
 function stage12 () {
-    function sendMessageToMatchingTabs() {
-        
-    }
-    
     chrome.storage.local.get('csvData', (result) => {
         if (result.csvData) {
             // const yourCsvDataVariable = result.csvData;

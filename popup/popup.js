@@ -21,6 +21,17 @@ document.getElementById('Unload').addEventListener('click', function() {
     getCurrentStage();   
 });
 
+function checkDates(data) {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    // return regex.test(dateString);
+
+    console.log("ROWS : ",data);
+    for(var row in data) {
+        if(!regex.test(data[row].Date)) return false;
+    }
+    return true;
+}
+
 function processCSV(csvText) {
     var rows = csvText.trim().split("\n");
     var headers = rows.shift().split(",");
@@ -44,6 +55,10 @@ function processCSV(csvText) {
     });
 
     console.log(data);
+    if (!checkDates(data)) {
+        alert("Please make sure to have the date in YYYY-MM-DD format");
+        return;
+    }
     // Here you would send the message to the runtime with the csvData
     // This is a placeholder for your actual runtime message sending code.
     // For example:
@@ -60,7 +75,7 @@ function arraysEqual(a, b) {
     console.log(a.length," : ",b.lenght);
     for (var i = 0; i < a.length; ++i) {
         console.log(a[i]," : ",b[i]);
-        if (a[i] !== b[i]) return false;
+        if (a[i].toLowerCase() !== b[i].toLowerCase()) return false;
     }
     return true;
 }
