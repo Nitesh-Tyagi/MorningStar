@@ -14,49 +14,52 @@ function stage10 () {
     });
 }
 
-// Define a delay function
+function stage20 () {
+    chrome.storage.local.set({csvData: [], stage: 0}, () => {
+        console.log("Default values set.");
+        
+        chrome.tabs.query({url: "*://investor.morningstar.com/portfolios/*"}, function(tabs) {
+            for (let tab of tabs) {
+                chrome.tabs.sendMessage(tab.id, {action: 'stop'}, function(response) {
+                    console.log("Message sent to tab: " + tab.id);
+                    if (response) {
+                        console.log("Response from tab:", response);
+                    }
+                });
+            }
+        });
+    });
+}
+
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// async function sendMessagesSequentially() {
-//     // Wrap the chrome.storage.local.get call in a promise to use await
-//     const result = await new Promise((resolve, reject) => {
-//         chrome.storage.local.get('csvData', (result) => {
-//             if (chrome.runtime.lastError) {
-//                 reject(new Error(chrome.runtime.lastError));
-//             } else {
-//                 resolve(result);
-//             }
-//         });
-//     });
-
-//     var csvData = result.csvData;
-//     for (let obj of csvData) {
-//         await chrome.runtime.sendMessage({action: 'automate', 'obj': obj});
-//         await delay(1000); // Wait for 1 second before sending the next message
-//     }
-// }
-
 function stage12 () {
-    chrome.storage.local.get('csvData', (result) => {
-        if (result.csvData) {
-            // const yourCsvDataVariable = result.csvData;
-            chrome.tabs.query({url: "*://investor.morningstar.com/portfolios/*"}, function(tabs) {
-                for (let tab of tabs) {
-                    chrome.tabs.sendMessage(tab.id, {action: 'automate', csvData: result.csvData}, function(response) {
-                        console.log("Message sent to tab: " + tab.id);
-                        if (response) {
-                            console.log("Response from tab:", response);
-                        }
-                    });
-                }
-            });
-        } else {
-            console.error('No CSV data found');
-        }
+    var startTime = new Date(); // Current time
+    console.log("START TIME : ", startTime.toISOString());
+
+    chrome.storage.local.set({stage: 2}, () => {
+        chrome.storage.local.get('csvData', (result) => {
+            if (result.csvData) {
+                chrome.tabs.query({url: "*://investor.morningstar.com/portfolios/*"}, function(tabs) {
+                    for (let tab of tabs) {
+                        chrome.tabs.sendMessage(tab.id, {action: 'automate', csvData: result.csvData, stage: 2}, function(response) {
+                            console.log("Message sent to tab: " + tab.id);
+                            if (response) {
+                                console.log("Response from tab:", response);
+                                var endTime = new Date(); // Current time
+                                console.log("FINISH TIME : ", endTime.toISOString());  
+                                console.log("DURATION : ", new Date(endTime - startTime).toISOString().substr(11, 8));
+                            }
+                        });
+                    }
+                });
+            } else {
+                console.error('No CSV data found');
+            }
+        });
     });
-    
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -74,6 +77,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } 
     else if (message.stage=='1-2') {
         stage12();
+    } 
+    else if (message.stage=='2-0') {
+        stage20();
     } 
 });
 

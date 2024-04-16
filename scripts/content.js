@@ -1,5 +1,4 @@
 async function performActionsInSequence(obj) {
-    // Adjust the delay between actions as needed
     const delayMs = 1000;
 
     // 1-7: Initial set of actions
@@ -27,22 +26,23 @@ async function performActionsInSequence(obj) {
     await performActionBasedOnProperty('input', 'placeholder', 'Add price', obj.Share_Price, delayMs);
     await performActionBasedOnProperty('focus', 'aria-label', 'Save', '', delayMs);
     await performActionBasedOnProperty('click', 'innerText', 'Save', '', delayMs);
-    // Assuming the second "Save" click is intentional and needs differentiation
+
     await performActionBasedOnProperty('focus', 'aria-label', 'Add Holdings to Demo Portfolio', '', delayMs);
-    await performActionBasedOnProperty('click', 'innerText', 'Save', '', delayMs + 500); // Slightly increased delay to ensure differentiation
+    await performActionBasedOnProperty('click', 'innerText', 'Save', '', delayMs + 500);
 }
 
 var csvData = [];
 var stage = 0;
 
-// window.onload = function() {
-    
-// };
-
 async function performActionsOnCsvDataSequentially(csvData) {
+    // console.log("CSV DATA : ",csvData);
     for (const obj of csvData) {
+        // console.log("OBJ : ",obj);
+        // console.log("STAGE : ",stage);
+        if(stage==0) break;
+
         await performActionsInSequence(obj);
-        console.log("Actions performed for current obj.");
+        // console.log("Actions performed for current obj.");
     }
     await chrome.runtime.sendMessage({stage: '1-0'});
 }
@@ -55,12 +55,12 @@ async function automate() {
 
             if (AddHoldings) {
                 clearInterval(checkInterval);
-                detection();
+                // detection();
                 
                 performActionsOnCsvDataSequentially(csvData).then(() => {
                     console.log("Completed all CSV data processing.");
                     resolve();
-                }).catch(reject); // Handle errors from performActionsOnCsvDataSequentially
+                }).catch(reject);
             }
         }, 1000);
     });
@@ -68,23 +68,31 @@ async function automate() {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'automate') {
-        console.log("OBJECT : ", message.csvData);
-        // Assuming csvData is declared at a higher scope
+        // console.log("OBJECT : ", message.csvData);
         csvData = message.csvData;
+        stage = message.stage;
 
-        // Call your automate function and wait for it to complete
         automate().then(() => {
             console.log("Automation completed.");
-            // Send a response back to the sender
             sendResponse({ status: 'completed' });
+            stage = 0;
+            csvData = [];
         }).catch(error => {
             console.error("Automation failed:", error);
-            // Send an error response back
             sendResponse({ status: 'error', message: error.toString() });
         });
 
-        // Return true to indicate you will respond asynchronously
         return true;
     }
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if(message.action === 'stop') {
+        csvData = [];
+        stage = 0;
+        sendResponse({ status: 'stopped' });
+    }
+
+    return true;
 });
 console.log('ADDED LISTENER!');

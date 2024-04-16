@@ -1,26 +1,52 @@
 .outerContainer {
     display: flex;
     flex-direction: column;
-    height: 80px;
-    width: 500px;
+    height: 100px; 
+    width: 300px;
     justify-content: space-evenly;
+    align-items: center; 
+    background-color: #FFFFFF; 
+    border: 1px solid #D8D8D8; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    padding: 20px; 
 }
 
 .innerContainer {
     display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
+    flex-direction: column; 
+    justify-content: center; 
+    width: 100%; 
+}
+
+input[type="file"] {
+    width: 90%; 
+    padding: 8px; 
+    margin-bottom: 10px; 
+    border: 2px solid #D8D8D8; 
+    border-radius: 5px; 
+    cursor: pointer; 
+}
+
+button {
+    background-color: #FF0000; 
+    color: #FFFFFF; 
+    border: none; 
+    padding: 10px 20px; 
+    margin: 5px 0; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+}
+
+button:hover {
+    background-color: #D80000; 
 }
 
 .displayBlock {
     display: block;
 }
+
 .displayNone {
     display: none;
 }
-
-/* 
-.stage-0
-.stage-1
-.stage-2
-*/

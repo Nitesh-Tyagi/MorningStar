@@ -20,12 +20,15 @@ document.getElementById('Unload').addEventListener('click', function() {
     chrome.runtime.sendMessage({stage: '1-0'});
     getCurrentStage();   
 });
+document.getElementById('Stop').addEventListener('click', function() {
+    chrome.runtime.sendMessage({stage: '2-0'});
+    getCurrentStage();   
+});
 
 function checkDates(data) {
     const regex = /^\d{4}-\d{2}-\d{2}$/;
-    // return regex.test(dateString);
 
-    console.log("ROWS : ",data);
+    // console.log("ROWS : ",data);
     for(var row in data) {
         if(!regex.test(data[row].Date)) return false;
     }
@@ -54,27 +57,24 @@ function processCSV(csvText) {
         return obj;
     });
 
-    console.log(data);
+    // console.log(data);
     if (!checkDates(data)) {
         alert("Please make sure to have the date in YYYY-MM-DD format");
         return;
     }
-    // Here you would send the message to the runtime with the csvData
-    // This is a placeholder for your actual runtime message sending code.
-    // For example:
     chrome.runtime.sendMessage({stage: '0-1', csvData: data});
     getCurrentStage();
 }
 
 // Utility function to compare two arrays
 function arraysEqual(a, b) {
-    console.log(a," ::: ",b);
+    // console.log(a," ::: ",b);
     if (a === b) return true;
     if (a == null || b == null) return false;
     if (a.length !== b.length) return false;
-    console.log(a.length," : ",b.lenght);
+    // console.log(a.length," : ",b.lenght);
     for (var i = 0; i < a.length; ++i) {
-        console.log(a[i]," : ",b[i]);
+        // console.log(a[i]," : ",b[i]);
         if (a[i].toLowerCase() !== b[i].toLowerCase()) return false;
     }
     return true;
@@ -99,11 +99,11 @@ function getCurrentStage() {
         if(response.stage==1) query = '.stage-1';
         else if(response.stage==2) query = '.stage-2';  
 
-        console.log('GETSTAGE : ',response.stage," :: ",query);
+        // console.log('GETSTAGE : ',response.stage," :: ",query);
         document.querySelectorAll(query).forEach(element => {
             if(element.classList.contains('displayNone')) element.classList.remove('displayNone');
             element.classList.add('displayBlock');
-            console.log(element);
+            // console.log(element);
         });
     });
 }
